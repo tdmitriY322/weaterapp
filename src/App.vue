@@ -1,17 +1,21 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+ <div>
+   <headerWeather></headerWeather>
+ </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import headerWeather from './components/headerWeather.vue'
+// import { mutations } from './store/index'
+ 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  computed: {
+  
+  },
+  components: { 
+    headerWeather,
+
   }
 }
 </script>

@@ -1,0 +1,29 @@
+// .container 
+//     background-color: $main-color
+//     height: 444px
+//     width: 500px
+
+
+// @import 'base/_variables';
+// @import 'base/_normalize';
+.container
+    width: 768px
+.header 
+    height: 60px
+    &__hamburger
+        span
+            display: block
+            height: 2px
+            width: 100%
+            background-color: black
+            margin-bottom: 2px
+            transition: 0.7s all
+        &_active 
+            span
+                margin-bottom: -2px
+                &:nth-child(1)
+                    transform: translateY(3px) rotate(-45deg)
+                &:nth-child(2)
+                    display: none
+                &:nth-child(3)
+                    transform: translateY(3px) rotate(45deg) 
