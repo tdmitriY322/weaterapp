@@ -3,7 +3,7 @@
         <div class="container">
             <div class="day__wrapper">
                 <div class="day__predict">
-                    прогноз на 24 часа
+                    прогноз на 12 часов
                 </div>
                 <div class="day__table">
                     <div class="day__items">
