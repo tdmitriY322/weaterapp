@@ -76,19 +76,22 @@
               <div class="day__predict">
                   прогноз на 12 часов
               </div>
-              <div class="day__table">
+              <div class="day__table" >
+                <div  v-for="(hour, i) in hourly" :key="i"  >
                   <div class="day__items">
                       <div class="day__condition">
-                          <div class="day__time" >{{ timeNow }}</div>
+                          <div class="day__time">{{ $moment.unix(hour.dt).format('HH:mm')  }}</div>
+                          <!-- <div>{{ hour.dt }}</div> -->
                           <img :src="sourse" :alt="altImg" class="day__icon">
                       </div>
                   </div>
                   <div class="day__items">
                       <div class="day__graph">
-                          <div class="day__degree">{{ timeDegree }}</div>
+                          <div class="day__degree">{{ parseFloat(hour.temp - 273.15).toFixed(0) }}°</div>
                           <div class="day__point"></div>
                       </div>
                   </div>
+              </div>
               </div>
             </div>
         </div>
@@ -118,6 +121,7 @@ export default {
       timeNow: "22:00",
       timeDegree: "-7°",
       altImg: "",
+      hourly: [],
     };
   },
   async created() {
@@ -152,10 +156,13 @@ export default {
 
       })
     },
-    async callWeatherOnDay(lon, lat) {
-      let responseOnDay = await this.fetchWeatherOnDay(lon, lat)
+    async callWeatherOnDay(coord) {
+      let responseOnDay = await this.fetchWeatherOnDay(coord)
+      this.hourly = responseOnDay.hourly.slice(0, 12)
+
       this.$set(this, "dataOnDay", responseOnDay);
-      console.log("!!!!!!!ALERT", responseOnDay);
+      console.log("!!!!!!!ALERT", responseOnDay, this.hourly);
+
     },
     changeClass() {
       if (this.isActive == false) {
@@ -174,9 +181,8 @@ export default {
       let day = days[dateNow.getDay()];
       let date = dateNow.getDate();
       let year = dateNow.getFullYear();
-      this.timeNow = dateNow.getHours() + ": 00"
+      this.timeNow = dateNow.getHours()
 
-      console.log(this.timeNow);
       return `${month} ${date} ${day} ${year}`;
     },
 

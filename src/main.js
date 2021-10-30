@@ -13,6 +13,8 @@ Vue.use(VueGoogleMaps, {
   }
 });
 
+Vue.use(require('vue-moment'));
+
 
 Vue.config.productionTip = false
 Vue.use(Vuex)

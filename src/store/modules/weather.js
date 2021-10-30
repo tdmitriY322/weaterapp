@@ -14,7 +14,7 @@ export default {
         async fetchWeatherOnDay(context, coord) {
             console.log('log data', coord.lat, coord.lon );
             try{
-                const responseOnday = await fetch ('https://api.openweathermap.org/data/2.5/onecall?lat=' + coord.lat + '&lon=' + coord.lon + '&exclude=hourly,daily&appid=c48f8c1593eeb60c0a54b8e60f0a7172')
+                const responseOnday = await fetch ('https://api.openweathermap.org/data/2.5/onecall?lat=' + coord.lat + '&lon=' + coord.lon + '&appid=c48f8c1593eeb60c0a54b8e60f0a7172')
                 const dailyWeather = responseOnday.json();
                 
                 context.commit('UPDATE_DAY_WEATHER', dailyWeather);
