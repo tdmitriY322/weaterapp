@@ -3,6 +3,9 @@ import App from './App.vue'
 import Vuex from 'vuex'
 import store from './store/index'
 import * as VueGoogleMaps from "vue2-google-maps";
+import VueGeolocationApi from 'vue-geolocation-api'
+
+Vue.use(VueGeolocationApi)
 
 
 Vue.use(VueGoogleMaps, {

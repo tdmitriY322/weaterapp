@@ -4,7 +4,7 @@
    <headerWeather></headerWeather>
    <!-- <centralWeather></centralWeather> -->
    <!-- <dayWeather></dayWeather> -->
-   <footerWeater></footerWeater>
+   <!-- <footerWeater></footerWeater> -->
    
  </div>
 </template>
@@ -14,7 +14,7 @@ import headerWeather from './components/headerWeather.vue'
 // import centralWeather from './components/centralWeather.vue'
 import background from './components/background.vue'
 // import dayWeather from './components/dayWeather.vue'
-import footerWeater from './components/footerWeater.vue'
+// import footerWeater from './components/footerWeater.vue'
 // import { mapActions, mapGetters } from './store/index'
  
 export default {
@@ -27,7 +27,7 @@ export default {
     // centralWeather,
     background,
     // dayWeather,
-    footerWeater,
+    // footerWeater,
 
   },
   methods: {
