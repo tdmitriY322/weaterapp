@@ -13,9 +13,9 @@
             <span></span>
           </div>
           <div class="header__city">
-            <div class="header__name">
-              {{ selectedCity }}
-            </div>
+            <!-- <div class="header__name"> -->
+              <!-- {{ selectedCity }} -->
+            <!-- </div> -->
             <div class="header__search">
               <div class="header__form">
                 <input
@@ -97,17 +97,65 @@
         </div>
     </div>
 
+    <div class="additionally">
+      <div class="container">
+             
+      <div class="additionally__wrapper">
+        <div class="additionally__items">
+          <div class="additionally__item">
+            <div class="additionally__header">
+              <img class="additionally__img" src="@/assets/icons/weatherConditionIcon/wet.png" alt="">
+              <div class="additionally__name">ВЛАЖНОСТЬ</div>
+            </div>
+            <div class="additionally__value">{{ additionally.humidity }}%</div>
+            <!-- <div class="additionally__description">{{ humidityText }}</div> -->
+          </div>
+        
+          <div class="additionally__item">
+            <div class="additionally__header">
+              <img class="additionally__img" src="@/assets/icons/weatherConditionIcon/humdity.png" alt="">
+              <div class="additionally__name">ВИДИМОСТЬ</div>
+            </div>
+            <div class="additionally__value">{{ (additionally.visibility)/ 1000}} КМ </div>
+            <div class="additionally__description"></div>
+          </div>
+     
+        
+          <div class="additionally__item">
+            <div class="additionally__header">
+              <img class="additionally__img" src="@/assets/icons/weatherConditionIcon/feels.png" alt="">
+              <div class="additionally__name ">ОЩУЩАЕТСЯ КАК</div>
+            </div>
+            <div class="additionally__value feelslike">{{ fellsLike }}°</div>
+            <div class="additionally__description"></div>
+          </div>
+
+          <div class="additionally__item">
+            <div class="additionally__header">
+              <img class="additionally__img" src="@/assets/icons/weatherConditionIcon/sunrise.png" alt="">
+              <div class="additionally__name">ВОСХОД СОЛНЦА</div>
+            </div>
+            <div class="additionally__value sunrise">{{ $moment.unix(additionally.sunrise).format('HH:mm')  }}</div>
+            <div class="additionally__value sunset">Закат: {{ $moment.unix(additionally.sunset).format('HH:mm')  }}</div>
+          </div>
+        
+        </div>
+      </div>
+      </div>
+    </div>
+    
+
     <div class="menu"
     v-bind:class="{ visible: isVisible }"
     >
       <div class="menu__wrapper">
-        <h3 class="menu__options">Настройки</h3>
+       
         <ul class="menu__items">
-          <li class="menu__item"><a href="#">Карта</a> </li>
-          <li class="menu__item"><a href="#">Погода на неделю</a></li>
-          <li class="menu__item"><a href="#">Обновить погоду</a> </li>
+          <li class="menu__item" ><a href="map">Карта</a> </li>
+          <li class="menu__item" @click="$router.push('/daily')">Погода на неделю</li>
+          <li class="menu__item"><a href="location">Обновить погоду</a> </li>
           <li class="menu__item"><a href="#">Пейзаж</a> </li>
-          <li class="menu__item"><a href="#">Настройки</a></li>
+          <li class="menu__item"><a href="settings">Настройки</a></li>
         </ul>
       </div>
     </div>
@@ -115,9 +163,11 @@
 </template>
 
 <script>
-// :src="'@/assets/icons/weatherConditionIcon/'+ iconTemp +'.png'"
-// import { eventBus } from './main'
+
 import { mapActions } from "vuex";
+import { mapMutations } from "vuex";
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
@@ -137,26 +187,47 @@ export default {
       timeNow: "22:00",
       timeDegree: "-7°",
       altImg: "",
+      fellsLike: "", 
       hourly: [],
       iconLink: "http://openweathermap.org/img/wn/",
+      minDegreeForecast: "",
+      maxDegreeForecast: "",
+      daily: [],
+      additionally: {
+         humidity: "", 
+         visibility: "",
+         fellsLike: "",
+         sunrise: "",
+         sunset: "", 
+      },
+      // myCoordinates: {
+      //   lat: 0,
+      //   lng: 0
+      // },
+     
 
-    };
+    };  
   },
   async created() {
     await this.searchStart();
-    await this.getLoaction();
-    console.log("created log");
+  },
+
+  watch: {
+    // city(value) {
+    //   console.log(value);
+    // },
+    'additionally.fellsLike': function(value) {
+      this.fellsLike = parseFloat(value - 273.15).toFixed(0)
+      console.log("watcher" ,value);
+    },
   },
   computed: {
-    getCoords() {
-      const coords = this.$geolocation.coords
-      if (!coords) return '?'
-      return (coords)
-    }
+    ...mapGetters(["STATE"]),
+
   },
   methods: {
-
-    ...mapActions(["fetchWeather", "fetchWeatherOnDay"]),
+    ...mapActions(["fetchWeather", "fetchWeatherOnDay", "sendDailyData"]),
+    ...mapMutations(["SEND_DAILY_FORECAST"]),
     getIconLink(iconeCode) {
       return this.iconLink + iconeCode + this.iconSpecCode
     },
@@ -164,35 +235,56 @@ export default {
       let response = await this.fetchWeather(this.city);
       this.$set(this, "dataOfCity", response);
       this.degrees = this.dataOfCity.main.temp;
-      this.selectedCity = this.dataOfCity.sys.country
+      // this.selectedCity = this.dataOfCity.name
+      // this.selectedCity = this.dataOfCity.
       this.condition = this.dataOfCity.weather[0].main
-     
+
+      this.additionally.humidity = this.dataOfCity.main.humidity
+      this.additionally.visibility = this.dataOfCity.visibility
+      this.additionally.fellsLike = this.dataOfCity.main.feels_like
+      this.additionally.sunset = this.dataOfCity.sys.sunset
+      this.additionally.sunrise = this.dataOfCity.sys.sunrise
 
       this.lon = this.dataOfCity.coord.lon
       this.lat = this.dataOfCity.coord.lat
       
       console.log("res!!!", response, "lon", this.lon, this.lat);
 
+
+
       await this.callWeatherOnDay({
         lon: this.lon,
         lat: this.lat 
       })
-      await this.getLoaction()
+      // await this.getLoaction()
       
     },
     async callWeatherOnDay(coord) {
       let responseOnDay = await this.fetchWeatherOnDay(coord)
-      this.hourly = responseOnDay.hourly.slice(0, 12)
-      this.iconCodeWeather = this.responseOnDay.hourly.hour.weather[0].icon
-      this.altImg = this.responseOnDay.weather[0].description
       this.$set(this, "dataOnDay", responseOnDay);
-      console.log("!!!!!!!ALERT", responseOnDay, this.hourly);
+      this.$set(this, 'hourly', responseOnDay.hourly.slice(0, 12))
+      // this.additionally.visibility = this.dataOnDay.current.visibility
+      // this.iconCodeWeather = this.responseOnDay.hourly.hour.weather[0].icon
+      // this.altImg = this.responseOnDay.weather[0].description
+      // this.daily = responseOnDay.daily.slice(0, 6)
+      this.$set(this, 'daily', responseOnDay.daily.slice(0, 6)) 
+      console.log("!!!!!!!ALERT", this.hourly);
+      console.log('!!!!!!!',this.daily); // Здесь получил погоду на неделю, как ее передать?
+      
+      // let sendDaily = await this.sendDailyData(this.daily)
+      // this.$set(this, 'dailydata', sendDaily)
 
+      this.SEND_DAILY_FORECAST(this.daily);
+
+      console.log("DAILY DATA", this.STATE.someOne); 
+      console.log( "[rwerwer", this.$store.state.someOne);
+
+      
     },
-    async getLoaction() {
-      const coords = this.$geolocation.coords
-      console.log("coordinate" ,coords.Coordinates.latitude,coords.Coordinates.longitude ); 
-    },
+    // async getLoaction() {
+    //   const coords = this.$geolocation.coords
+    //   return coords
+    //  },
     changeClass() {
       if (this.isActive == false) {
         this.isActive = true;
@@ -216,6 +308,7 @@ export default {
 
       return `${month} ${date} ${day} ${year}`;
     },
+
   },
 
 
